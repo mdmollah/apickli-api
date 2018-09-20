@@ -1,9 +1,11 @@
 @console
 Feature:
-    Sample API Testing Using Mock Server
+    Sample GPI API Testing Using prism mock server
+
+    Background:
+      Given I use the MOCK_GPI target
 
     Scenario: Validate Response Code:get_invalid_events
-        Given I use the MOCK target
         And I set body to {"get_invalid_events_request": {"my_institution": ["CCLABEB0"],"from_date_time": "2017-05-25T09:00:00.000Z","to_date_time": "2017-05-25T17:30:00.000Z","maximum_number": "100"}}
         And I set headers to
           |name                    |value                                                                                 |
@@ -21,7 +23,6 @@ Feature:
         Then response code should be 200
 
       Scenario: Validate Response Headers:get_invalid_events
-        Given I use the MOCK target
             And I set body to {"get_invalid_events_request": {"my_institution": ["CCLABEB0"],"from_date_time": "2017-05-25T09:00:00.000Z","to_date_time": "2017-05-25T17:30:00.000Z","maximum_number": "100"}}
             And I set headers to
               |name                    |value                                                                                 |
@@ -41,10 +42,8 @@ Feature:
             And response header LAUCallTime should exist
             And response header LAUSignature should exist
             And response header LAUSignature should be U1khA8h9Lm1PqzB99fG6uw==
-          
 
       Scenario: Validate Response Body:get_invalid_events
-        Given I use the MOCK target
         And I store the raw value ./features/SWIFT-API_gpi-api_2.0.2_swagger.json as swaggerSpecPath in scenario scope
         And I set body to {"get_invalid_events_request": {"my_institution": ["CCLABEB0"],"from_date_time": "2017-05-25T09:00:00.000Z","to_date_time": "2017-05-25T17:30:00.000Z","maximum_number": "100"}}
         And I set headers to
@@ -64,9 +63,7 @@ Feature:
         And response body should be valid according to schema file `swaggerSpecPath`
         And response body should be valid json
 
-
         Scenario: Error Scenario-Bad Request:get_invalid_events
-            Given I use the MOCK target
             And I set body to {"get_invalid_events_request": {"my_institution": [""],"from_date_time": "2017-05-25T09:00:00.000Z","to_date_time": "2017-05-25T17:30:00.000Z","maximum_number": "100"}}
             And I set headers to
               |name                    |value                                                                                 |

@@ -1,0 +1,3460 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "KYC Registry API",
+    "version" : "1.0.0-oas2",
+    "title" : "KYC API",
+    "license" : {
+      "name" : "SWIFT API Collaboration Group Agreement",
+      "url" : "https://www2.swift.com/dlc/download/files/API_Collaboration_Group_Agreement_19June2018.pdf"
+    }
+  },
+  "host" : "kycregistry.swift.com",
+  "basePath" : "/v1/api",
+  "schemes" : [ "https" ],
+  "consumes" : [ "application/json" ],
+  "produces" : [ "application/json" ],
+  "paths" : {
+    "/auth/login" : {
+      "get" : {
+        "tags" : [ "Authentication" ],
+        "summary" : "Login",
+        "description" : "This API is a login call to authenticate which will return a JSON token if the client's credentials are valid. This token needs to be included in all other consumption or list retrieval service requests.",
+        "operationId" : "Login",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "clientID",
+          "in" : "query",
+          "description" : "Client ID of the login user",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "secretKey",
+          "in" : "query",
+          "description" : "Secret Key of the login user",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Token"
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "schema" : { }
+          },
+          "503" : {
+            "description" : "Service Unavailable",
+            "schema" : { }
+          },
+          "default" : {
+            "description" : "Internal server error",
+            "schema" : { }
+          }
+        },
+        "security" : [ ]
+      }
+    },
+    "/entity/folders/{BIC}" : {
+      "get" : {
+        "tags" : [ "Consumption" ],
+        "summary" : "GetKYCDataPerBIC",
+        "description" : "This API is a consumption query that enables you to extract all KYC data points spread across the 5 folder categories of baseline for the BIC specified.",
+        "operationId" : "EntityFoldersByBicGet",
+        "produces" : [ "application/json", "application/xml" ],
+        "parameters" : [ {
+          "name" : "BIC",
+          "in" : "path",
+          "description" : "BIC of the entity for which the data needs to be extracted",
+          "required" : true,
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9]{11}$"
+        }, {
+          "name" : "lastPublishedSince",
+          "in" : "query",
+          "description" : "This is an optional delta parameter that enables you to restrict the consumption query to KYC data published after a given date (in the format YYYY-MM-DD).",
+          "required" : false,
+          "type" : "string",
+          "pattern" : "^\\d{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation",
+            "examples" : { },
+            "schema" : {
+              "$ref" : "#/definitions/Entity"
+            }
+          },
+          "400" : {
+            "description" : "Invalid BIC or entity cannot be found",
+            "schema" : { }
+          },
+          "403" : {
+            "description" : "Not authorised",
+            "schema" : { }
+          },
+          "404" : {
+            "description" : "Data requested cannot be found",
+            "schema" : { }
+          },
+          "503" : {
+            "description" : "Service Unavailable",
+            "schema" : { }
+          },
+          "default" : {
+            "description" : "Internal server error",
+            "schema" : { }
+          }
+        },
+        "security" : [ {
+          "Bearer" : [ ]
+        } ]
+      }
+    },
+    "/entity/folders/{BIC}/profile" : {
+      "get" : {
+        "tags" : [ "Consumption" ],
+        "summary" : "GetKYCProfilePerBIC",
+        "description" : "This API is a consumption query that enables you to extract the KYC profile in zip data folder which includes all data points (in PDFs, json, and xml) and evidencing documents spread across the 5 folder categories of the baseline for the BIC specified. Please note this API will not include the annual report and signatory list which can be downloaded via GetKYCDocument.",
+        "operationId" : "EntityFoldersProfileByBicGet",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "BIC",
+          "in" : "path",
+          "description" : "BIC of the entity for which the data needs to be extracted",
+          "required" : true,
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9]{11}$"
+        }, {
+          "name" : "lastPublishedSince",
+          "in" : "query",
+          "description" : "This is an optional delta parameter that enables you to restrict the consumption query to KYC data published after a given date (in the format YYYY-MM-DD).",
+          "required" : false,
+          "type" : "string",
+          "pattern" : "^\\d{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation",
+            "examples" : { },
+            "schema" : {
+              "type" : "object"
+            }
+          },
+          "400" : {
+            "description" : "Invalid BIC or entity cannot be found",
+            "schema" : { }
+          },
+          "403" : {
+            "description" : "Not authorised",
+            "schema" : { }
+          },
+          "404" : {
+            "description" : "Data requested cannot be found",
+            "schema" : { }
+          },
+          "503" : {
+            "description" : "Service Unavailable",
+            "schema" : { }
+          },
+          "default" : {
+            "description" : "Internal server error",
+            "schema" : { }
+          }
+        },
+        "security" : [ {
+          "Bearer" : [ ]
+        } ]
+      }
+    },
+    "/documents/{documentId}" : {
+      "get" : {
+        "tags" : [ "Consumption" ],
+        "summary" : "GetKYCDocument",
+        "description" : "This API is a consumption query that enables you to download an evidencing document for the BIC specified.",
+        "operationId" : "DocumentsDocumentNameByBicAndFolderIdGet",
+        "produces" : [ "application/octet-stream" ],
+        "parameters" : [ {
+          "name" : "documentId",
+          "in" : "path",
+          "description" : "Document identifier of the document to be downloaded",
+          "required" : true,
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9]{11}$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation",
+            "examples" : { },
+            "schema" : {
+              "type" : "string",
+              "format" : "binary"
+            }
+          },
+          "400" : {
+            "description" : "Invalid BIC or entity cannot be found",
+            "schema" : { }
+          },
+          "403" : {
+            "description" : "Not authorised",
+            "schema" : { }
+          },
+          "404" : {
+            "description" : "Data requested cannot be found",
+            "schema" : { }
+          },
+          "503" : {
+            "description" : "Service Unavailable",
+            "schema" : { }
+          },
+          "default" : {
+            "description" : "Internal server error",
+            "schema" : { }
+          }
+        },
+        "security" : [ {
+          "Bearer" : [ ]
+        } ]
+      }
+    },
+    "/entities/my" : {
+      "get" : {
+        "tags" : [ "List Retrieval" ],
+        "summary" : "GetMyEntities",
+        "description" : "This API is a list retrieval query that enables you to extract a list of all entities which belong to your KYC group",
+        "operationId" : "EntitiesMyGet",
+        "produces" : [ "application/json", "application/xml" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation",
+            "examples" : { },
+            "schema" : {
+              "$ref" : "#/definitions/EntityList"
+            }
+          },
+          "400" : {
+            "description" : "Invalid BIC or entity cannot be found",
+            "schema" : { }
+          },
+          "403" : {
+            "description" : "Not authorised",
+            "schema" : { }
+          },
+          "404" : {
+            "description" : "Data requested cannot be found",
+            "schema" : { }
+          },
+          "503" : {
+            "description" : "Service Unavailable",
+            "schema" : { }
+          },
+          "default" : {
+            "description" : "Internal server error",
+            "schema" : { }
+          }
+        },
+        "security" : [ {
+          "Bearer" : [ ]
+        } ]
+      }
+    },
+    "/counterparties/my" : {
+      "get" : {
+        "tags" : [ "List Retrieval" ],
+        "summary" : "GetMyCounterparties",
+        "description" : "This API is a list retrieval query that enables you to extract a list of all counterparties which granted access to your KYC group. Triggering this API will activate/re-activate the passive relationships.",
+        "operationId" : "CounterpartiesMyGet",
+        "produces" : [ "application/json", "application/xml" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation",
+            "examples" : { },
+            "schema" : {
+              "$ref" : "#/definitions/ListOfCounterparties"
+            }
+          },
+          "400" : {
+            "description" : "Invalid BIC or entity cannot be found",
+            "schema" : { }
+          },
+          "403" : {
+            "description" : "Not authorised",
+            "schema" : { }
+          },
+          "404" : {
+            "description" : "Data requested cannot be found",
+            "schema" : { }
+          },
+          "503" : {
+            "description" : "Service Unavailable",
+            "schema" : { }
+          },
+          "default" : {
+            "description" : "Internal server error",
+            "schema" : { }
+          }
+        },
+        "security" : [ {
+          "Bearer" : [ ]
+        } ]
+      }
+    }
+  },
+  "securityDefinitions" : {
+    "Bearer" : {
+      "type" : "apiKey",
+      "name" : "Authorization",
+      "in" : "header"
+    }
+  },
+  "definitions" : {
+    "Token" : {
+      "type" : "object",
+      "properties" : {
+        "token" : {
+          "type" : "string",
+          "example" : "EyjhB2adERxt45sEE.aGhYyDDuIO",
+          "description" : "This is used for authorization for subsequent API call, it is set as Bearer Token in Header"
+        }
+      },
+      "title" : "Token",
+      "example" : {
+        "token" : "EyjhB2adERxt45sEE.aGhYyDDuIO"
+      }
+    },
+    "Entity" : {
+      "type" : "object",
+      "properties" : {
+        "bic" : {
+          "type" : "string",
+          "example" : "GLOBDESTXXX",
+          "description" : ""
+        },
+        "lei" : {
+          "type" : "string",
+          "example" : "B81CK4ESI35472RHJ606",
+          "description" : ""
+        },
+        "legalName" : {
+          "type" : "string",
+          "example" : "GLOBAL BANK BADEN-WUERTTEMBERG",
+          "description" : ""
+        },
+        "registeredAddress" : {
+          "type" : "string",
+          "example" : "MAIN STREET 1, MANNHEIM 68165, Germany (DE)",
+          "description" : ""
+        },
+        "tradingName" : {
+          "type" : "string",
+          "example" : "GLOBAL BANK BADEN-WUERTTEMBERG",
+          "description" : ""
+        },
+        "operatingAddress" : {
+          "type" : "string",
+          "example" : "POB 10 60 49 MAIN STREET 1, STUTTGART 70173, Germany (DE)",
+          "description" : ""
+        },
+        "folders" : {
+          "$ref" : "#/definitions/Folders"
+        }
+      },
+      "title" : "Entity"
+    },
+    "Folders" : {
+      "type" : "object",
+      "properties" : {
+        "identificationOfCustomer" : {
+          "$ref" : "#/definitions/DataIoc"
+        },
+        "ownershipManagementStructure" : {
+          "$ref" : "#/definitions/DataOms"
+        },
+        "typeOfBusiness" : {
+          "$ref" : "#/definitions/DataTob"
+        },
+        "compliance" : {
+          "$ref" : "#/definitions/DataCom"
+        },
+        "taxation" : {
+          "$ref" : "#/definitions/DataTax"
+        }
+      },
+      "title" : "Folders"
+    },
+    "DataIoc" : {
+      "title" : "Data_IOC",
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/DataIoc_inner"
+      }
+    },
+    "Data" : {
+      "type" : "object",
+      "properties" : {
+        "LegalFormLocal" : {
+          "type" : "string",
+          "example" : "Joint stock company",
+          "description" : ""
+        },
+        "LegalFormAnglicised" : {
+          "type" : "string",
+          "example" : "Joint stock company",
+          "description" : ""
+        },
+        "LegalNameLocal" : {
+          "type" : "string",
+          "example" : "GLOBAL BANK",
+          "description" : ""
+        },
+        "LegalNamePrevious" : {
+          "type" : "string",
+          "example" : "Not applicable",
+          "description" : ""
+        },
+        "TradingNameLocal" : {
+          "type" : "string",
+          "example" : "Not applicable",
+          "description" : ""
+        },
+        "IndustryClassifications" : {
+          "$ref" : "#/definitions/IndustryClassifications"
+        },
+        "SICCodes" : {
+          "$ref" : "#/definitions/SICCodes"
+        },
+        "EmployeesNumber" : {
+          "type" : "string",
+          "example" : "1-50",
+          "description" : ""
+        },
+        "RegistrationNumber" : {
+          "type" : "string",
+          "example" : "111-222-3333",
+          "description" : ""
+        },
+        "RegistrationAuthorityCountry" : {
+          "type" : "string",
+          "example" : "Germany",
+          "description" : ""
+        },
+        "RegistrationAuthority" : {
+          "type" : "string",
+          "example" : "Unternehmens-register - Company Register",
+          "description" : ""
+        },
+        "RegistrationAuthorityWebsite" : {
+          "type" : "string",
+          "example" : "Not applicable",
+          "description" : ""
+        },
+        "IncorporationDate" : {
+          "type" : "string",
+          "example" : "1/1/2002 12:00:00 AM",
+          "description" : ""
+        },
+        "Website" : {
+          "type" : "string",
+          "example" : "Not applicable",
+          "description" : ""
+        },
+        "RegulatoryStatus" : {
+          "type" : "string",
+          "example" : "Fully Regulated",
+          "description" : ""
+        },
+        "ShellBank" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "RegulatorCountryPrimary" : {
+          "type" : "string",
+          "example" : "Germany",
+          "description" : ""
+        },
+        "RegulatorNamePrimary" : {
+          "type" : "string",
+          "example" : "Bundesanstalt für Finanzdienstleistungsaufsicht - Federal Financial Supervisory Authority",
+          "description" : ""
+        },
+        "RegulatorWebsitePrimary" : {
+          "type" : "string",
+          "example" : "Not applicable",
+          "description" : ""
+        },
+        "PassportedLicence" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "LicencesInfo" : {
+          "$ref" : "#/definitions/LicencesInfo"
+        }
+      },
+      "title" : "Data"
+    },
+    "IndustryClassifications" : {
+      "type" : "object",
+      "properties" : {
+        "IndustryClassification" : {
+          "type" : "string",
+          "example" : "SIC",
+          "description" : ""
+        }
+      },
+      "title" : "IndustryClassifications"
+    },
+    "SICCodes" : {
+      "type" : "object",
+      "properties" : {
+        "SICCode" : {
+          "type" : "string",
+          "example" : "6021 - National Commercial Banks",
+          "description" : ""
+        }
+      },
+      "title" : "SICCodes"
+    },
+    "LicencesInfo" : {
+      "type" : "object",
+      "properties" : {
+        "LicenceInfo" : {
+          "$ref" : "#/definitions/LicenceInfo"
+        }
+      },
+      "title" : "LicencesInfo"
+    },
+    "LicenceInfo" : {
+      "type" : "object",
+      "properties" : {
+        "LicenceTypes" : {
+          "$ref" : "#/definitions/LicenceTypes"
+        },
+        "OffshoreBankingLicense" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "LicenceRestriction" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "LicenceNumber" : {
+          "type" : "string",
+          "example" : "Not applicable",
+          "description" : ""
+        },
+        "LicenceAuthorityCountry" : {
+          "type" : "string",
+          "example" : "Germany",
+          "description" : ""
+        },
+        "LicenceAuthorityName" : {
+          "type" : "string",
+          "example" : "Bundesanstalt für Finanzdienstleistungsaufsicht - Federal Financial Supervisory Authority",
+          "description" : ""
+        },
+        "RegulatedFinancialServicesYear" : {
+          "type" : "string",
+          "example" : "2004",
+          "description" : ""
+        }
+      },
+      "title" : "LicenceInfo"
+    },
+    "LicenceTypes" : {
+      "type" : "object",
+      "properties" : {
+        "LicenceType" : {
+          "type" : "string",
+          "example" : "Full Licence",
+          "description" : ""
+        }
+      },
+      "title" : "LicenceTypes"
+    },
+    "DocumentModel" : {
+      "type" : "object",
+      "properties" : {
+        "documentId" : {
+          "type" : "string",
+          "example" : "SWAAABU99027",
+          "description" : ""
+        },
+        "documentType" : {
+          "type" : "string",
+          "example" : "Proof of regulation",
+          "description" : ""
+        },
+        "fileName" : {
+          "type" : "string",
+          "example" : "GLOBDESTXXX_POR_English.pdf",
+          "description" : ""
+        },
+        "language" : {
+          "type" : "string",
+          "example" : "English",
+          "description" : ""
+        },
+        "url" : {
+          "type" : "string",
+          "example" : "/documents/SWAAABU99027",
+          "description" : ""
+        },
+        "expiryDate" : {
+          "type" : "string",
+          "example" : "2020-01-01T00:00:00.000Z",
+          "description" : ""
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Proof Of Regulation",
+          "description" : ""
+        },
+        "documentStatus" : {
+          "type" : "string",
+          "example" : "Not applicable",
+          "description" : ""
+        },
+        "documentStatusComment" : {
+          "type" : "string",
+          "example" : "This document is not applicable",
+          "description" : ""
+        }
+      },
+      "title" : "DocumentModel",
+      "example" : {
+        "documentType" : "Proof of regulation",
+        "fileName" : "GLOBDESTXXX_POR_English.pdf",
+        "language" : "English",
+        "url" : "/documents/SWAAABU99027",
+        "expiryDate" : "2020-01-01T00:00:00.000Z",
+        "description" : "Proof Of Regulation"
+      }
+    },
+    "DataOms" : {
+      "title" : "Data_OMS",
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/DataOms_inner"
+      }
+    },
+    "Data11" : {
+      "type" : "object",
+      "properties" : {
+        "OrganisationForms" : {
+          "$ref" : "#/definitions/OrganisationForms"
+        },
+        "SharesPercentage" : {
+          "type" : "string",
+          "example" : "12",
+          "description" : ""
+        },
+        "StockExchangeCountryPrimary" : {
+          "type" : "string",
+          "example" : "Germany",
+          "description" : ""
+        },
+        "StockExchangeNamePrimary" : {
+          "type" : "string",
+          "example" : "Börse Stuttgart AG",
+          "description" : ""
+        },
+        "StockExchangeWebsitePrimary" : {
+          "type" : "string",
+          "example" : "http://www.boerse-stuttgart.de",
+          "description" : ""
+        },
+        "StockExchangeCodePrimary" : {
+          "type" : "string",
+          "example" : "XSTU",
+          "description" : ""
+        },
+        "StockExchangeCountrySecondary" : {
+          "type" : "string",
+          "example" : "Not applicable",
+          "description" : ""
+        },
+        "BearerShares" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ShareholdingEntitiesStatement" : {
+          "type" : "string",
+          "example" : "We confirm that no company owns directly and/or indirectly 10 % or more of the entity's shares",
+          "description" : ""
+        },
+        "TrustInStructure" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "TrustsInfo" : {
+          "$ref" : "#/definitions/TrustsInfo"
+        },
+        "FoundationInStructure" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "UBOsStatement" : {
+          "type" : "string",
+          "example" : "We confirm that our Ultimate Beneficial Owners are as follows and that no other natural person controls or owns directly and/or indirectly 10 % or more of the entity's shares",
+          "description" : ""
+        },
+        "UBOsInfo" : {
+          "$ref" : "#/definitions/UBOsInfo"
+        },
+        "FactualControl" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "KeyControllersInfo" : {
+          "$ref" : "#/definitions/KeyControllersInfo"
+        },
+        "AuditedAnnualReport" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "AuditorsNames" : {
+          "$ref" : "#/definitions/AuditorsNames"
+        },
+        "ReportingCurrency" : {
+          "type" : "string",
+          "example" : "EUR - EURO",
+          "description" : ""
+        },
+        "SourceOfWealthBusiness" : {
+          "type" : "string",
+          "example" : "Funding from parent / beneficial owner",
+          "description" : ""
+        }
+      },
+      "title" : "Data11"
+    },
+    "OrganisationForms" : {
+      "type" : "object",
+      "properties" : {
+        "OrganisationForm" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Publicly traded"
+          }
+        }
+      },
+      "title" : "OrganisationForms"
+    },
+    "TrustsInfo" : {
+      "type" : "object",
+      "properties" : {
+        "TrustInfo" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "$ref" : "#/definitions/TrustInfo"
+          }
+        }
+      },
+      "title" : "TrustsInfo"
+    },
+    "TrustInfo" : {
+      "type" : "object",
+      "properties" : {
+        "LegalNameTrust" : {
+          "type" : "string",
+          "example" : "Great Imperial Trust",
+          "description" : ""
+        },
+        "RegisteredAddressTrust" : {
+          "$ref" : "#/definitions/RegisteredAddressTrust"
+        },
+        "SettlorType" : {
+          "type" : "string",
+          "example" : "Entity",
+          "description" : ""
+        },
+        "TrusteeTypeTrust" : {
+          "type" : "string",
+          "example" : "Entity",
+          "description" : ""
+        },
+        "BeneficiariesNumberTrust" : {
+          "type" : "string",
+          "example" : "More than 5",
+          "description" : ""
+        },
+        "RegulatorCountryTrustee" : {
+          "type" : "string",
+          "example" : "Not applicable",
+          "description" : ""
+        },
+        "ProtectorName" : {
+          "type" : "string",
+          "example" : "Not applicable",
+          "description" : ""
+        }
+      },
+      "title" : "TrustInfo"
+    },
+    "RegisteredAddressTrust" : {
+      "type" : "object",
+      "properties" : {
+        "RegisteredAddressCountryTrust" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Denmark"
+          }
+        }
+      },
+      "title" : "RegisteredAddressTrust"
+    },
+    "UBOsInfo" : {
+      "type" : "object",
+      "properties" : {
+        "UBOInfo" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "$ref" : "#/definitions/UBOInfo"
+          }
+        }
+      },
+      "title" : "UBOsInfo"
+    },
+    "UBOInfo" : {
+      "type" : "object",
+      "properties" : {
+        "UBOType" : {
+          "type" : "string",
+          "example" : "Family member",
+          "description" : ""
+        },
+        "FamilyNameUBO" : {
+          "type" : "string",
+          "example" : "Rothschild",
+          "description" : ""
+        },
+        "NameUBO" : {
+          "$ref" : "#/definitions/NameUBO"
+        },
+        "GenderUBO" : {
+          "type" : "string",
+          "example" : "Male",
+          "description" : ""
+        },
+        "AddressUBO" : {
+          "$ref" : "#/definitions/AddressUBO"
+        },
+        "NationalitiesUBO" : {
+          "$ref" : "#/definitions/NationalitiesUBO"
+        },
+        "SourcesOfWealthUBO" : {
+          "$ref" : "#/definitions/SourcesOfWealthUBO"
+        },
+        "OwnerhsipTypeUBO" : {
+          "type" : "string",
+          "example" : "Direct",
+          "description" : ""
+        },
+        "OwnershipLevelsUBO" : {
+          "$ref" : "#/definitions/OwnershipLevelsUBO"
+        },
+        "IntermediateEntityUBO" : {
+          "type" : "string",
+          "example" : "Not applicable",
+          "description" : ""
+        },
+        "NonDilutedSharesPercentageUBO" : {
+          "type" : "string",
+          "example" : "45",
+          "description" : ""
+        },
+        "DilutedSharesPercentageUBO" : {
+          "type" : "string",
+          "example" : "10",
+          "description" : ""
+        }
+      },
+      "title" : "UBOInfo"
+    },
+    "NameUBO" : {
+      "type" : "object",
+      "properties" : {
+        "FirstNameLatinUBO" : {
+          "type" : "string",
+          "example" : "Damien",
+          "description" : ""
+        },
+        "MiddleNameLatinUBO" : {
+          "type" : "string",
+          "example" : "Henry",
+          "description" : ""
+        },
+        "LastNameLatinUBO" : {
+          "type" : "string",
+          "example" : "Rothschild",
+          "description" : ""
+        }
+      },
+      "title" : "NameUBO"
+    },
+    "AddressUBO" : {
+      "type" : "object",
+      "properties" : {
+        "AddressCountryUBO" : {
+          "type" : "string",
+          "example" : "Denmark",
+          "description" : ""
+        }
+      },
+      "title" : "AddressUBO"
+    },
+    "NationalitiesUBO" : {
+      "type" : "object",
+      "properties" : {
+        "NationalityUBO" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "United Kingdom"
+          }
+        }
+      },
+      "title" : "NationalitiesUBO"
+    },
+    "SourcesOfWealthUBO" : {
+      "type" : "object",
+      "properties" : {
+        "SourceOfWealthUBO" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Active Wealth/ Investments"
+          }
+        }
+      },
+      "title" : "SourcesOfWealthUBO"
+    },
+    "OwnershipLevelsUBO" : {
+      "type" : "object",
+      "properties" : {
+        "OwnershipLevelUBO" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "3"
+          }
+        }
+      },
+      "title" : "OwnershipLevelsUBO"
+    },
+    "KeyControllersInfo" : {
+      "type" : "object",
+      "properties" : {
+        "KeyControllerInfo" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "$ref" : "#/definitions/KeyControllerInfo"
+          }
+        }
+      },
+      "title" : "KeyControllersInfo"
+    },
+    "KeyControllerInfo" : {
+      "type" : "object",
+      "properties" : {
+        "NameKeyController" : {
+          "$ref" : "#/definitions/NameKeyController"
+        },
+        "GenderKeyController" : {
+          "type" : "string",
+          "example" : "Female",
+          "description" : ""
+        },
+        "DateOfBirthKeyController" : {
+          "type" : "string",
+          "example" : "Not disclosed",
+          "description" : ""
+        },
+        "YearOfBirthKeyController" : {
+          "type" : "string",
+          "example" : "Not disclosed",
+          "description" : ""
+        },
+        "AddressKeyController" : {
+          "$ref" : "#/definitions/AddressKeyController"
+        },
+        "NationalitiesKeyController" : {
+          "$ref" : "#/definitions/NationalitiesKeyController"
+        },
+        "JobTitlesKeyController" : {
+          "$ref" : "#/definitions/JobTitlesKeyController"
+        },
+        "MembershipKeyController" : {
+          "$ref" : "#/definitions/MembershipKeyController"
+        }
+      },
+      "title" : "KeyControllerInfo"
+    },
+    "NameKeyController" : {
+      "type" : "object",
+      "properties" : {
+        "FirstNameLatinKeyController" : {
+          "type" : "string",
+          "example" : "Jessie",
+          "description" : ""
+        },
+        "LastNameLatinKeyController" : {
+          "type" : "string",
+          "example" : "Lim",
+          "description" : ""
+        }
+      },
+      "title" : "NameKeyController"
+    },
+    "AddressKeyController" : {
+      "type" : "object",
+      "properties" : {
+        "AddressCountryKeyController" : {
+          "type" : "string",
+          "example" : "China",
+          "description" : ""
+        }
+      },
+      "title" : "AddressKeyController"
+    },
+    "NationalitiesKeyController" : {
+      "type" : "object",
+      "properties" : {
+        "NationalityKeyController" : {
+          "type" : "string",
+          "example" : "China",
+          "description" : ""
+        }
+      },
+      "title" : "NationalitiesKeyController"
+    },
+    "JobTitlesKeyController" : {
+      "type" : "object",
+      "properties" : {
+        "JobTitleKeyController" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Chair of the Audit Committee"
+          }
+        }
+      },
+      "title" : "JobTitlesKeyController"
+    },
+    "MembershipKeyController" : {
+      "type" : "object",
+      "properties" : {
+        "MembershipTypesKeyController" : {
+          "$ref" : "#/definitions/MembershipTypesKeyController"
+        }
+      },
+      "title" : "MembershipKeyController"
+    },
+    "MembershipTypesKeyController" : {
+      "type" : "object",
+      "properties" : {
+        "MembershipTypeKeyController" : {
+          "type" : "string",
+          "example" : "Board of Directors",
+          "description" : ""
+        }
+      },
+      "title" : "MembershipTypesKeyController"
+    },
+    "AuditorsNames" : {
+      "type" : "object",
+      "properties" : {
+        "AuditorName" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Deloitte"
+          }
+        }
+      },
+      "title" : "AuditorsNames"
+    },
+    "DataTob" : {
+      "title" : "Data_TOB",
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/DataTob_inner"
+      }
+    },
+    "Data34" : {
+      "type" : "object",
+      "properties" : {
+        "ProductsAndServicesOffered" : {
+          "$ref" : "#/definitions/ProductsAndServicesOffered"
+        },
+        "DomesticBanksCBServices" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "DomesticBanksDwnstrmServices" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ForeignBanksCBServices" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ForeignBanksDwnstrmServices" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MsbCBservices" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "MsbDwnstrmServices" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "CashServicesToCustody" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "CorrespondentClearingServicesToCustody" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "DwnstrmCorrespondentClearingServices" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "DwnstrmCorrespondentClearingServicesDomesticAffiliates" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "DwnstrmCorrespondentClearingServicesDomesticAffiliatesCurrencies" : {
+          "$ref" : "#/definitions/DwnstrmCorrespondentClearingServicesDomesticAffiliatesCurrencies"
+        },
+        "DwnstrmCorrespondentClearingServicesForeignAffiliates" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "DwnstrmCorrespondentClearingServicesDomesticBanks" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "DwnstrmCorrespondentClearingServicesForeignBanks" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AnonymousAccounts" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "BusinessForFictiousNames" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "WireTransfersRevenueSignificant" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "FinancialProductsThroughThirdParties" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "InternetOnlyChannel" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ProductsAndServicesApplicableToBranches" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "CustomerBases" : {
+          "$ref" : "#/definitions/CustomerBases"
+        },
+        "ProportionIndividualsMassRetail" : {
+          "type" : "string",
+          "example" : "<10%",
+          "description" : ""
+        },
+        "WalkInCustomersServices" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "NonAccountCustomersServices" : {
+          "$ref" : "#/definitions/NonAccountCustomersServices"
+        },
+        "NonAccountsCustomersServicesCurrencies" : {
+          "$ref" : "#/definitions/NonAccountsCustomersServicesCurrencies"
+        },
+        "NonAccountsCustomersTransactionsLimits" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "NonAccountsCustomersTransactionScreening" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "ShellBanksServices" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "OffshoreCustomersSignificant" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MSBCustomers" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "RegulatedMsbCustomersServices" : {
+          "$ref" : "#/definitions/RegulatedMsbCustomersServices"
+        },
+        "RegulatedMSBCustomersNumber" : {
+          "type" : "string",
+          "example" : "26-50",
+          "description" : ""
+        },
+        "CountriesRegulatedMsbCustomers" : {
+          "$ref" : "#/definitions/CountriesRegulatedMsbCustomers"
+        },
+        "UnregulatedMSBCustomersServices" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "FormerMSBServices" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "PrivateInvestmentCompaniesServices" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "CompaniesIssuingBearerSharesServices" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "VirtualCurrencyExchangesServices" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "FXAggregatorsCustomers" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "FXAggregatorsProviders" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "AggregatorProvidersLicensed" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "GamblingCompaniesServices" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "GamblingCompaniesRegulated" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "InternetGamblingCompaniesServices" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "FiftyPercentOfRevenueFromOneKeyCustomer" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "KeyCustomerPrimaryIndustries" : {
+          "$ref" : "#/definitions/KeyCustomerPrimaryIndustries"
+        },
+        "CustomerBaseIndustry" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "EntityPresences" : {
+          "$ref" : "#/definitions/EntityPresences"
+        },
+        "EntityPresencesNorthAmerica" : {
+          "$ref" : "#/definitions/EntityPresencesNorthAmerica"
+        },
+        "FiftyPercentOfAssestCountry" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "CustomersPresences" : {
+          "$ref" : "#/definitions/CustomersPresences"
+        },
+        "CustomersPresencesNorthAmerica" : {
+          "$ref" : "#/definitions/CustomersPresencesNorthAmerica"
+        },
+        "CustomersPresencesMiddleEast" : {
+          "$ref" : "#/definitions/CustomersPresencesMiddleEast"
+        },
+        "TenPercentOfCustomerBaseCountry" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "TenPercentOfRevenueCountry" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "SanctionedJurisdictionPresence" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "SanctionedJurisdictionFuturePresence" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        }
+      },
+      "title" : "Data34"
+    },
+    "ProductsAndServicesOffered" : {
+      "type" : "object",
+      "properties" : {
+        "ProductAndServiceOffered" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Correspondent Banking"
+          }
+        }
+      },
+      "title" : "ProductsAndServicesOffered"
+    },
+    "DwnstrmCorrespondentClearingServicesDomesticAffiliatesCurrencies" : {
+      "type" : "object",
+      "properties" : {
+        "DwnstrmCorrespondentClearingServicesDomesticAffiliatesCurrency" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "EUR - EURO"
+          }
+        }
+      },
+      "title" : "DwnstrmCorrespondentClearingServicesDomesticAffiliatesCurrencies"
+    },
+    "CustomerBases" : {
+      "type" : "object",
+      "properties" : {
+        "CustomerBase" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Individuals - Mass Retail"
+          }
+        }
+      },
+      "title" : "CustomerBases"
+    },
+    "NonAccountCustomersServices" : {
+      "type" : "object",
+      "properties" : {
+        "NonAccountCustomersService" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Foreign exchange"
+          }
+        }
+      },
+      "title" : "NonAccountCustomersServices"
+    },
+    "NonAccountsCustomersServicesCurrencies" : {
+      "type" : "object",
+      "properties" : {
+        "NonAccountsCustomersServicesCurrency" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "MYR - MALAYSIAN RINGGIT"
+          }
+        }
+      },
+      "title" : "NonAccountsCustomersServicesCurrencies"
+    },
+    "RegulatedMsbCustomersServices" : {
+      "type" : "object",
+      "properties" : {
+        "RegulatedMSBCustomersService" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Local Currency Clearing"
+          }
+        }
+      },
+      "title" : "RegulatedMsbCustomersServices"
+    },
+    "CountriesRegulatedMsbCustomers" : {
+      "type" : "object",
+      "properties" : {
+        "CountryRegulatedMSBCustomers" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Algeria"
+          }
+        }
+      },
+      "title" : "CountriesRegulatedMsbCustomers"
+    },
+    "KeyCustomerPrimaryIndustries" : {
+      "type" : "object",
+      "properties" : {
+        "KeyCustomerPrimaryIndustry" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "10-14 Mining"
+          }
+        }
+      },
+      "title" : "KeyCustomerPrimaryIndustries"
+    },
+    "EntityPresences" : {
+      "type" : "object",
+      "properties" : {
+        "EntityPresence" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "North America"
+          }
+        }
+      },
+      "title" : "EntityPresences"
+    },
+    "EntityPresencesNorthAmerica" : {
+      "type" : "object",
+      "properties" : {
+        "EntityPresenceNorthAmerica" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Jamaica"
+          }
+        }
+      },
+      "title" : "EntityPresencesNorthAmerica"
+    },
+    "CustomersPresences" : {
+      "type" : "object",
+      "properties" : {
+        "CustomersPresence" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "North America"
+          }
+        }
+      },
+      "title" : "CustomersPresences"
+    },
+    "CustomersPresencesNorthAmerica" : {
+      "type" : "object",
+      "properties" : {
+        "CustomersPresenceNorthAmerica" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "United States"
+          }
+        }
+      },
+      "title" : "CustomersPresencesNorthAmerica"
+    },
+    "CustomersPresencesMiddleEast" : {
+      "type" : "object",
+      "properties" : {
+        "CustomersPresenceMiddleEast" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Israel"
+          }
+        }
+      },
+      "title" : "CustomersPresencesMiddleEast"
+    },
+    "DataCom" : {
+      "title" : "Data_COM",
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/DataCom_inner"
+      }
+    },
+    "Data49" : {
+      "type" : "object",
+      "properties" : {
+        "ContactDetailsML" : {
+          "type" : "string",
+          "example" : "Money Laundering Reporting Officer",
+          "description" : ""
+        },
+        "MLReportingOfficer" : {
+          "$ref" : "#/definitions/MLReportingOfficer"
+        },
+        "ComplianceOfficers" : {
+          "type" : "string",
+          "example" : "Not disclosed",
+          "description" : ""
+        },
+        "ContactDetailsAML" : {
+          "type" : "string",
+          "example" : "Not disclosed",
+          "description" : ""
+        },
+        "NonUSToUSRelationInSecurities" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ComplianceAtGroupLevel" : {
+          "type" : "string",
+          "example" : "No, the entity is not part of a group",
+          "description" : ""
+        },
+        "IndependentAMLFunction" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "IndependentSanctionsFunction" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "EntitySubjectToLocalLaw" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MinAMLStandards" : {
+          "$ref" : "#/definitions/MinAMLStandards"
+        },
+        "EmployeesNumberInAMLSanctions" : {
+          "type" : "string",
+          "example" : "10-50",
+          "description" : ""
+        },
+        "EntityConfidentialABCWhistleblowingAvailability" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AMLSanctionsApprovalFreq" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "LastAMLSanctionsReviewDate" : {
+          "type" : "string",
+          "example" : "8/9/2017 12:00:00 AM",
+          "description" : ""
+        },
+        "AMLSanctionsReportingToBoard" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AMLSanctionsByThirdParty" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AMLSanctionsApplicableToAllBranches" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCConsistencyOnDocumentedPolicies" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCSetupMinStandards" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCSetupOfficer" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCSetupAdequateStaff" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCProg" : {
+          "$ref" : "#/definitions/ABCProg"
+        },
+        "ABCPolicies" : {
+          "$ref" : "#/definitions/ABCPolicies"
+        },
+        "ABCPoliciesEffectivenessMonitoring" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCReportingToBoard" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCAssessmentToEnterprise" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCRiskRating" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCRiskCoverage" : {
+          "$ref" : "#/definitions/ABCRiskCoverage"
+        },
+        "ABCPoliciesCoveredByInternalAudit" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCTraining" : {
+          "$ref" : "#/definitions/ABCTraining"
+        },
+        "ABCTrainingForSpecificRoles" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "WhistleBlowerPolicy" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "ABCInvestigationOnPotentialViolation" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCProcessApplicableToAllBranches" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "PoliciesConsistency" : {
+          "$ref" : "#/definitions/PoliciesConsistency"
+        },
+        "PoliciesUpdatedAnnually" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "PoliciesGap" : {
+          "$ref" : "#/definitions/PoliciesGap"
+        },
+        "RiskToleranceStatement" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "RetentionProcedures" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "PolicyToMonitorHighMoneyLaunderingRiskAccount" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "ProcessToIdentifyDownstreamRelationWithDomesticBanks" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "ProcessToIdentifyDownstreamRelationWithForeginBanks" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "ProcessToIdentifyDownstreamRelationWithMSB" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "PoliciesApplicableToAllBranches" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AMLRARiskCoverage" : {
+          "$ref" : "#/definitions/AMLRARiskCoverage"
+        },
+        "AMLRAControlCoverage" : {
+          "$ref" : "#/definitions/AMLRAControlCoverage"
+        },
+        "AMLRALast12Months" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "SanctionsRARiskCoverage" : {
+          "$ref" : "#/definitions/SanctionsRARiskCoverage"
+        },
+        "SanctionsRAControlCoverage" : {
+          "$ref" : "#/definitions/SanctionsRAControlCoverage"
+        },
+        "SanctionsRALast12Months" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AMLHighRiskGeoArea" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AMLSanctionsRAApplicableToAllBranches" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "IOCVerification" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "PoliciesToEnsureCDDCompletion" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "InfoRetainmentOnCDD" : {
+          "$ref" : "#/definitions/InfoRetainmentOnCDD"
+        },
+        "DDIdentification" : {
+          "$ref" : "#/definitions/DDIdentification"
+        },
+        "MinThresholdBeneficialOwnershipIdentification" : {
+          "type" : "string",
+          "example" : "20%",
+          "description" : ""
+        },
+        "KYCApprovers" : {
+          "$ref" : "#/definitions/KYCApprovers"
+        },
+        "KYCProcessDifferenceForRenewalAndOnboarding" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "KYCRenewalTrigger" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "HasCentralisedKYCProcess" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "CustRiskClassification" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "CustScreeningOnAdverseMedia" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "CustScreeningOnAdverseMediaMethods" : {
+          "$ref" : "#/definitions/CustScreeningOnAdverseMediaMethods"
+        },
+        "EntityPEPDefinitions" : {
+          "$ref" : "#/definitions/EntityPEPDefinitions"
+        },
+        "LocalAndForeignPEPCompare" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "CustScreeningOnPEP" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "CustScreeningOnPEPMethods" : {
+          "$ref" : "#/definitions/CustScreeningOnPEPMethods"
+        },
+        "ListPEPScreenings" : {
+          "$ref" : "#/definitions/ListPEPScreenings"
+        },
+        "PEPScreeningFreqs" : {
+          "$ref" : "#/definitions/PEPScreeningFreqs"
+        },
+        "PEPScreeningProcedure" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "CustInfoReview" : {
+          "$ref" : "#/definitions/CustInfoReview"
+        },
+        "DDReviewReport" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "EDDCategories" : {
+          "$ref" : "#/definitions/EDDCategories"
+        },
+        "EDDProcesses" : {
+          "$ref" : "#/definitions/EDDProcesses"
+        },
+        "EDDQualityControl" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "EDDProcessApplicableToAllCust" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "KYCCDDEDDApplicableToAllBranches" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "TransactionMonitoringOnSuspiciousActivity" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "TransactionMonitoringOnSuspiciousActivityMethods" : {
+          "$ref" : "#/definitions/TransactionMonitoringOnSuspiciousActivityMethods"
+        },
+        "AMLMonitoringApplicableToAllTransactions" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "CurrencyReportingReq" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "PoliciesToComplyCurrencyReportingReq" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "PoliciesToReviewCurrencyReportingReq" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "CashReportingReq" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "CashReportingAutomatedMonitoring" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "TransactionMonitoringLevels" : {
+          "$ref" : "#/definitions/TransactionMonitoringLevels"
+        },
+        "TransactionMonitoringCriterias" : {
+          "$ref" : "#/definitions/TransactionMonitoringCriterias"
+        },
+        "SuspiciousAlertsReviewGovernance" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "SuspiciousAlertsReviewStaff" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "SuspiciousAlertsEscalation" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ReportSuspiciousAlerts" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MonitoringReportingApplicableToAllBranches" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "WBPTSAdherence" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "FATFCompliance" : {
+          "$ref" : "#/definitions/FATFCompliance"
+        },
+        "ProcessToRespondRFIs" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "IPMControlsForAccurateOriInfo" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "IPMControlsForRequiredBeneficiary" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "PaymentTransparencyApplicableToAllBranches" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "CompliedSanctionsPolicies" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "PoliciesToPreventUseOfAnotherFIAccount" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "PoliciesToDetectActionToEvadeSanctions" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "SanctionsScreeningOnCustData" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "SanctionsScreeningOnSanctionsRelevantData" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "SanctionsListsInUsed" : {
+          "$ref" : "#/definitions/SanctionsListsInUsed"
+        },
+        "SanctionsListUpdateFreqOnNewEntities" : {
+          "type" : "string",
+          "example" : "Within 3 to 5 days",
+          "description" : ""
+        },
+        "PhysicalPresenseInSanctionsJurisdiction" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "SanctionsApplicableToAllBranches" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MandatoryTraining" : {
+          "$ref" : "#/definitions/MandatoryTraining"
+        },
+        "MandatoryTrainingGivenTo" : {
+          "$ref" : "#/definitions/MandatoryTrainingGivenTo"
+        },
+        "AMLSanctionsCTRTraining" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "AMLSanctionsCTRTrainingFreq" : {
+          "type" : "string",
+          "example" : "Annually",
+          "description" : ""
+        },
+        "CustomizedAMLTraining" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "TrainingEducationApplicableToAllBranches" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "QAProcess" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "IndependentQAProcess" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "QAApplicableToAllBranches" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "InternalAuditFunction" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AuditFreq" : {
+          "$ref" : "#/definitions/AuditFreq"
+        },
+        "AuditCoverage" : {
+          "$ref" : "#/definitions/AuditCoverage"
+        },
+        "AuditFindingsOnAML" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AuditFindingsTracking" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "LastAMLInspectionByRegulators" : {
+          "type" : "string",
+          "example" : "5/24/2008 12:00:00 AM",
+          "description" : ""
+        },
+        "AMLFindingsByRegulators" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "HasViolationWithinThreeYears" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AuditApplicableToAllBranches" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        }
+      },
+      "title" : "Data49"
+    },
+    "MLReportingOfficer" : {
+      "type" : "object",
+      "properties" : {
+        "FirstNameMLReportingOfficer" : {
+          "type" : "string",
+          "example" : "Jacob",
+          "description" : ""
+        },
+        "LastNameMLReportingOfficer" : {
+          "type" : "string",
+          "example" : "Ethan",
+          "description" : ""
+        },
+        "EmailMLReportingOfficer" : {
+          "type" : "string",
+          "example" : "jacob.ethan@global.com",
+          "description" : ""
+        }
+      },
+      "title" : "MLReportingOfficer"
+    },
+    "MinAMLStandards" : {
+      "type" : "object",
+      "properties" : {
+        "MinAMLStandardOnAppointedOfficer" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MinAMLStandardOnCashReporting" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MinAMLStandardOnCDD" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MinAMLStandardOnEDD" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "MinAMLStandardOnBeneficialOwnership" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "MinAMLStandardOnIndependentTesting" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "MinAMLStandardOnPeriodicReview" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MinAMLStandardOnPoliciesProcedures" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MinAMLStandardOnRiskAssessment" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MinAMLStandardOnSanctions" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MinAMLStandardOnPEPScreening" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MinAMLStandardOnAdverseInfoScreening" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MinAMLStandardOnSuspiciousActivityReporting" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "MinAMLStandardOnTraining" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MinAMLStandardOnTransactionMonitoring" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        }
+      },
+      "title" : "MinAMLStandards"
+    },
+    "ABCProg" : {
+      "type" : "object",
+      "properties" : {
+        "ABCProgForJointVentures" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCProgForThirdParties" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        }
+      },
+      "title" : "ABCProg"
+    },
+    "ABCPolicies" : {
+      "type" : "object",
+      "properties" : {
+        "ABCPoliciesWithNoBribes" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCPoliciesWithPublicOfficials" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCPoliciesWithProhibitionAgainstFalsification" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        }
+      },
+      "title" : "ABCPolicies"
+    },
+    "ABCRiskCoverage" : {
+      "type" : "object",
+      "properties" : {
+        "ABCRiskCoverageOnPotentialLiability" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCRiskCoverageOnCorruptionCountries" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCRiskCoverageOnTrasactionProductionServices" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCRiskCoverageOnCorruptionGifts" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCRiskCoverageOnBusinessChanges" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        }
+      },
+      "title" : "ABCRiskCoverage"
+    },
+    "ABCTraining" : {
+      "type" : "object",
+      "properties" : {
+        "ABCTrainingForBoard" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCTrainingForFirstLine" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCTrainingForSecondLine" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCTrainingForThirdLine" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCTrainingForThirdParty" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ABCTrainingForNonEmployees" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        }
+      },
+      "title" : "ABCTraining"
+    },
+    "PoliciesConsistency" : {
+      "type" : "object",
+      "properties" : {
+        "PoliciesConsistencyForAML" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "PoliciesConsistencyForTerroristFinancing" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "PoliciesConsistencyForSanctionsViolation" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        }
+      },
+      "title" : "PoliciesConsistency"
+    },
+    "PoliciesGap" : {
+      "type" : "object",
+      "properties" : {
+        "PoliciesGapAgainstUSStandards" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "PoliciesGapAgainstEUStandards" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        }
+      },
+      "title" : "PoliciesGap"
+    },
+    "AMLRARiskCoverage" : {
+      "type" : "object",
+      "properties" : {
+        "AMLRARiskCoverageOnClient" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AMLRARiskCoverageOnProduct" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AMLRARiskCoverageOnChannel" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AMLRARiskCoverageOnGeography" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        }
+      },
+      "title" : "AMLRARiskCoverage"
+    },
+    "AMLRAControlCoverage" : {
+      "type" : "object",
+      "properties" : {
+        "AMLRAControlCoverageOnTransactionMonitoring" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "AMLRAControlCoverageOnCDD" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "AMLRAControlCoverageOnPEPIdentification" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "AMLRAControlCoverageOnTransactionScreening" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "AMLRAControlCoverageOnNameScreening" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AMLRAControlCoverageOnTrainingAndEducation" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "AMLRAControlCoverageOnGovernance" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AMLRAControlCoverageOnMgmtInfo" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        }
+      },
+      "title" : "AMLRAControlCoverage"
+    },
+    "SanctionsRARiskCoverage" : {
+      "type" : "object",
+      "properties" : {
+        "SanctionsRARiskCoverageOnClient" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "SanctionsRARiskCoverageOnProduct" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "SanctionsRARiskCoverageOnChannel" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "SanctionsRARiskCoverageOnGeography" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        }
+      },
+      "title" : "SanctionsRARiskCoverage"
+    },
+    "SanctionsRAControlCoverage" : {
+      "type" : "object",
+      "properties" : {
+        "SanctionsRAControlCoverageOnCDD" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "SanctionsRAControlCoverageOnTransactionScreening" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "SanctionsRAControlCoverageOnNameScreening" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "SanctionsRAControlCoverageOnListMgmt" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "SanctionsRAControlCoverageOnTrainingAndEducation" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "SanctionsRAControlCoverageOnGovernance" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "SanctionsRAControlCoverageOnMgmtInfo" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        }
+      },
+      "title" : "SanctionsRAControlCoverage"
+    },
+    "InfoRetainmentOnCDD" : {
+      "type" : "object",
+      "properties" : {
+        "InfoRetainmentOnCDDForOwnershipStructure" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "InfoRetainmentOnCDDForCustIdentification" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "InfoRetainmentOnCDDForExpectedActivity" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "InfoRetainmentOnCDDForBusinessNature" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "InfoRetainmentOnCDDForProductUsage" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "InfoRetainmentOnCDDForRelationshipNature" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "InfoRetainmentOnCDDForSOF" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "InfoRetainmentOnCDDForSOW" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        }
+      },
+      "title" : "InfoRetainmentOnCDD"
+    },
+    "DDIdentification" : {
+      "type" : "object",
+      "properties" : {
+        "DDIdentificationOnUBO" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "DDIdentificationOnAuthorisedSignatories" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "DDIdentificationOnKeyControllers" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "DDIdentificationOnOtherRelevantParties" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        }
+      },
+      "title" : "DDIdentification"
+    },
+    "KYCApprovers" : {
+      "type" : "object",
+      "properties" : {
+        "KYCApprover" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Business"
+          }
+        }
+      },
+      "title" : "KYCApprovers"
+    },
+    "CustScreeningOnAdverseMediaMethods" : {
+      "type" : "object",
+      "properties" : {
+        "CustScreeningOnAdverseMediaMethod" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Manual"
+          }
+        }
+      },
+      "title" : "CustScreeningOnAdverseMediaMethods"
+    },
+    "EntityPEPDefinitions" : {
+      "type" : "object",
+      "properties" : {
+        "EntityPEPDefinition" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Wolfsberg definition"
+          }
+        }
+      },
+      "title" : "EntityPEPDefinitions"
+    },
+    "CustScreeningOnPEPMethods" : {
+      "type" : "object",
+      "properties" : {
+        "CustScreeningOnPEPMethod" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Automated"
+          }
+        }
+      },
+      "title" : "CustScreeningOnPEPMethods"
+    },
+    "ListPEPScreenings" : {
+      "type" : "object",
+      "properties" : {
+        "ListPEPScreening" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Factiva Dow Jones"
+          }
+        }
+      },
+      "title" : "ListPEPScreenings"
+    },
+    "PEPScreeningFreqs" : {
+      "type" : "object",
+      "properties" : {
+        "PEPScreeningFreq" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "At on-boarding"
+          }
+        }
+      },
+      "title" : "PEPScreeningFreqs"
+    },
+    "CustInfoReview" : {
+      "type" : "object",
+      "properties" : {
+        "CustInfoReviewOnKYCRenewal" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "CustInfoReviewOnTriggerEvent" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        }
+      },
+      "title" : "CustInfoReview"
+    },
+    "EDDCategories" : {
+      "type" : "object",
+      "properties" : {
+        "EDDCategoryOnNonAccountCust" : {
+          "type" : "string",
+          "example" : "EDD & restricted on a risk based approach",
+          "description" : ""
+        },
+        "EDDCategoryOnOffshoreCust" : {
+          "type" : "string",
+          "example" : "None of the above",
+          "description" : ""
+        },
+        "EDDCategoryOnShellBank" : {
+          "type" : "string",
+          "example" : "None of the above",
+          "description" : ""
+        },
+        "EDDCategoryOnMSBCust" : {
+          "type" : "string",
+          "example" : "None of the above",
+          "description" : ""
+        },
+        "EDDCategoryOnPEP" : {
+          "type" : "string",
+          "example" : "None of the above",
+          "description" : ""
+        },
+        "EDDCategoryOnPEPRelated" : {
+          "type" : "string",
+          "example" : "None of the above",
+          "description" : ""
+        },
+        "EDDCategoryOnPEPCloseAssociate" : {
+          "type" : "string",
+          "example" : "None of the above",
+          "description" : ""
+        },
+        "EDDCategoryOnCorrespondentBank" : {
+          "type" : "string",
+          "example" : "None of the above",
+          "description" : ""
+        },
+        "EDDCategoryOnArms" : {
+          "type" : "string",
+          "example" : "None of the above",
+          "description" : ""
+        },
+        "EDDCategoryOnAtomicPower" : {
+          "type" : "string",
+          "example" : "None of the above",
+          "description" : ""
+        },
+        "EDDCategoryOnEnv" : {
+          "type" : "string",
+          "example" : "EDD & restricted on a risk based approach",
+          "description" : ""
+        },
+        "EDDCategoryOnPreciousMetal" : {
+          "type" : "string",
+          "example" : "None of the above",
+          "description" : ""
+        },
+        "EDDCategoryOnUnregulatedCharity" : {
+          "type" : "string",
+          "example" : "None of the above",
+          "description" : ""
+        },
+        "EDDCategoryOnRegulatedCharity" : {
+          "type" : "string",
+          "example" : "None of the above",
+          "description" : ""
+        },
+        "EDDCategoryOnRedLight" : {
+          "type" : "string",
+          "example" : "None of the above",
+          "description" : ""
+        },
+        "EDDCategoryOnNGO" : {
+          "type" : "string",
+          "example" : "None of the above",
+          "description" : ""
+        },
+        "EDDCategoryOnVirtualCurrency" : {
+          "type" : "string",
+          "example" : "None of the above",
+          "description" : ""
+        },
+        "EDDCategoryOnMarijuana" : {
+          "type" : "string",
+          "example" : "None of the above",
+          "description" : ""
+        },
+        "EDDCategoryOnEmbassies" : {
+          "type" : "string",
+          "example" : "None of the above",
+          "description" : ""
+        },
+        "EDDCategoryOnGambling" : {
+          "type" : "string",
+          "example" : "None of the above",
+          "description" : ""
+        },
+        "EDDCategoryOnPaymentServicesProvider" : {
+          "type" : "string",
+          "example" : "None of the above",
+          "description" : ""
+        }
+      },
+      "title" : "EDDCategories"
+    },
+    "EDDProcesses" : {
+      "type" : "object",
+      "properties" : {
+        "EDDProcess" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Geographic areas of business"
+          }
+        }
+      },
+      "title" : "EDDProcesses"
+    },
+    "TransactionMonitoringOnSuspiciousActivityMethods" : {
+      "type" : "object",
+      "properties" : {
+        "TransactionMonitoringOnSuspiciousActivityMethod" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Manual"
+          }
+        }
+      },
+      "title" : "TransactionMonitoringOnSuspiciousActivityMethods"
+    },
+    "TransactionMonitoringLevels" : {
+      "type" : "object",
+      "properties" : {
+        "TransactionMonitoringLevel" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Branch level"
+          }
+        }
+      },
+      "title" : "TransactionMonitoringLevels"
+    },
+    "TransactionMonitoringCriterias" : {
+      "type" : "object",
+      "properties" : {
+        "TransactionMonitoringCriteria" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Rules / Scenarios"
+          }
+        }
+      },
+      "title" : "TransactionMonitoringCriterias"
+    },
+    "FATFCompliance" : {
+      "type" : "object",
+      "properties" : {
+        "FATFComplianceOnRecommendationSixteen" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "FATFComplianceOnLocalRegulation" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        }
+      },
+      "title" : "FATFCompliance"
+    },
+    "SanctionsListsInUsed" : {
+      "type" : "object",
+      "properties" : {
+        "SanctionsListsInUsedUN" : {
+          "$ref" : "#/definitions/SanctionsListsInUsedUN"
+        },
+        "SanctionsListsInUsedOFAC" : {
+          "$ref" : "#/definitions/SanctionsListsInUsedOFAC"
+        },
+        "SanctionsListsInUsedOFSI" : {
+          "$ref" : "#/definitions/SanctionsListsInUsedOFSI"
+        },
+        "SanctionsListsInUsedEU" : {
+          "$ref" : "#/definitions/SanctionsListsInUsedEU"
+        },
+        "SanctionsListsInUsedG7" : {
+          "$ref" : "#/definitions/SanctionsListsInUsedG7"
+        }
+      },
+      "title" : "SanctionsListsInUsed"
+    },
+    "SanctionsListsInUsedUN" : {
+      "type" : "object",
+      "properties" : {
+        "SanctionsListInUsedUN" : {
+          "type" : "string",
+          "example" : "Used for screening customers and beneficial owners (i.e. reference data)",
+          "description" : ""
+        }
+      },
+      "title" : "SanctionsListsInUsedUN"
+    },
+    "SanctionsListsInUsedOFAC" : {
+      "type" : "object",
+      "properties" : {
+        "SanctionsListInUsedOFAC" : {
+          "type" : "string",
+          "example" : "Used for screening customers and beneficial owners (i.e. reference data)",
+          "description" : ""
+        }
+      },
+      "title" : "SanctionsListsInUsedOFAC"
+    },
+    "SanctionsListsInUsedOFSI" : {
+      "type" : "object",
+      "properties" : {
+        "SanctionsListInUsedOFSI" : {
+          "type" : "string",
+          "example" : "Used for screening customers and beneficial owners (i.e. reference data)",
+          "description" : ""
+        }
+      },
+      "title" : "SanctionsListsInUsedOFSI"
+    },
+    "SanctionsListsInUsedEU" : {
+      "type" : "object",
+      "properties" : {
+        "SanctionsListInUsedEU" : {
+          "type" : "string",
+          "example" : "Used for filtering transactional data (MT fields)",
+          "description" : ""
+        }
+      },
+      "title" : "SanctionsListsInUsedEU"
+    },
+    "SanctionsListsInUsedG7" : {
+      "type" : "object",
+      "properties" : {
+        "SanctionsListInUsedG7" : {
+          "type" : "string",
+          "example" : "Used for filtering transactional data (MT fields)",
+          "description" : ""
+        }
+      },
+      "title" : "SanctionsListsInUsedG7"
+    },
+    "MandatoryTraining" : {
+      "type" : "object",
+      "properties" : {
+        "MandatoryTrainingOnReportingForAuthorities" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MandatoryTrainingOnAMLExamples" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MandatoryTrainingOnInternalPolicies" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MandatoryTrainingOnNewIssues" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MandatoryTrainingOnConductAndCulture" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        }
+      },
+      "title" : "MandatoryTraining"
+    },
+    "MandatoryTrainingGivenTo" : {
+      "type" : "object",
+      "properties" : {
+        "MandatoryTrainingGivenToBoard" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MandatoryTrainingGivenTo1stLine" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MandatoryTrainingGivenTo2ndLine" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "MandatoryTrainingGivenTo3rdLine" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "MandatoryTrainingGivenTo3rdParties" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "MandatoryTrainingGivenToContractors" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        }
+      },
+      "title" : "MandatoryTrainingGivenTo"
+    },
+    "AuditFreq" : {
+      "type" : "object",
+      "properties" : {
+        "AuditFreqByInternal" : {
+          "type" : "string",
+          "example" : "Yearly",
+          "description" : ""
+        },
+        "AuditFreqByExternal" : {
+          "type" : "string",
+          "example" : "Every 18 months",
+          "description" : ""
+        }
+      },
+      "title" : "AuditFreq"
+    },
+    "AuditCoverage" : {
+      "type" : "object",
+      "properties" : {
+        "AuditCoverageOnAML" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AuditCoverageOnKYC" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AuditCoverageOnTransactionMonitoring" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "AuditCoverageOnTransactionScreening" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AuditCoverageOnNameScreening" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AuditCoverageOnTrainingEducation" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AuditCoverageOnTech" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AuditCoverageOnGovernance" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "AuditCoverageOnReporting" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "AuditCoverageOnSuspiciousActivities" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "AuditCoverageOnWideRisk" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "AuditCoverageOther" : {
+          "type" : "string",
+          "example" : "Not applicable",
+          "description" : ""
+        }
+      },
+      "title" : "AuditCoverage"
+    },
+    "Documents" : {
+      "type" : "object",
+      "properties" : {
+        "document" : {
+          "$ref" : "#/definitions/Document"
+        }
+      },
+      "title" : "Documents"
+    },
+    "Document" : {
+      "type" : "object",
+      "properties" : {
+        "language" : {
+          "type" : "string",
+          "example" : "English",
+          "description" : ""
+        },
+        "fileName" : {
+          "type" : "string",
+          "example" : "GLOBDESTXXX_WBQ_English.pdf",
+          "description" : ""
+        },
+        "url" : {
+          "type" : "string",
+          "description" : ""
+        }
+      },
+      "title" : "Document"
+    },
+    "DataTax" : {
+      "title" : "Data_TAX",
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/definitions/DataTax_inner"
+      }
+    },
+    "Data90" : {
+      "type" : "object",
+      "properties" : {
+        "FATCAStatus" : {
+          "type" : "string",
+          "example" : "In scope",
+          "description" : ""
+        },
+        "FATCAClassification" : {
+          "type" : "string",
+          "example" : "Deemed Compliant Foreign Financial Institution (FFI)",
+          "description" : ""
+        },
+        "GIIN" : {
+          "type" : "string",
+          "example" : "Not applicable",
+          "description" : ""
+        },
+        "ContactFATCA" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "ContactDetailsFATCA" : {
+          "type" : "string",
+          "example" : "FATCA contact department",
+          "description" : ""
+        },
+        "ContactDepartmentsFATCA" : {
+          "$ref" : "#/definitions/ContactDepartmentsFATCA"
+        },
+        "EntityUnderCRS" : {
+          "type" : "string",
+          "example" : "No",
+          "description" : ""
+        },
+        "ContactCRS" : {
+          "type" : "string",
+          "example" : "Yes",
+          "description" : ""
+        },
+        "ContactDetailsCRS" : {
+          "type" : "string",
+          "example" : "Not disclosed",
+          "description" : ""
+        },
+        "TaxNumber" : {
+          "type" : "string",
+          "example" : "Not applicable",
+          "description" : ""
+        },
+        "TaxCountries" : {
+          "$ref" : "#/definitions/TaxCountries"
+        }
+      },
+      "title" : "Data90"
+    },
+    "ContactDepartmentsFATCA" : {
+      "type" : "object",
+      "properties" : {
+        "ContactDepartmentFATCA" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "$ref" : "#/definitions/ContactDepartmentFATCA"
+          }
+        }
+      },
+      "title" : "ContactDepartmentsFATCA"
+    },
+    "ContactDepartmentFATCA" : {
+      "type" : "object",
+      "properties" : {
+        "DepartmentNameFATCA" : {
+          "type" : "string",
+          "example" : "FATCA Department",
+          "description" : ""
+        },
+        "DepartmentEmailFATCA" : {
+          "type" : "string",
+          "example" : "facta@global.com",
+          "description" : ""
+        }
+      },
+      "title" : "ContactDepartmentFATCA"
+    },
+    "TaxCountries" : {
+      "type" : "object",
+      "properties" : {
+        "TaxCountry" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "type" : "string",
+            "example" : "Germany"
+          }
+        }
+      },
+      "title" : "TaxCountries"
+    },
+    "EntityList" : {
+      "type" : "object",
+      "properties" : {
+        "myEntity" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "$ref" : "#/definitions/DataMyentity"
+          }
+        }
+      },
+      "title" : "EntityList"
+    },
+    "DataMyentity" : {
+      "type" : "object",
+      "properties" : {
+        "legalName" : {
+          "type" : "string",
+          "example" : "GLOBAL BANK BADEN-WUERTTEMBERG",
+          "description" : ""
+        },
+        "bic" : {
+          "type" : "string",
+          "example" : "GLOBDESTXXX",
+          "description" : ""
+        }
+      },
+      "title" : "Data_myEntity"
+    },
+    "ListOfCounterparties" : {
+      "type" : "object",
+      "properties" : {
+        "myCounterparty" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "$ref" : "#/definitions/DataMycounterparty"
+          }
+        }
+      },
+      "title" : "ListOfCounterparties"
+    },
+    "DataMycounterparty" : {
+      "type" : "object",
+      "properties" : {
+        "bic" : {
+          "type" : "string",
+          "example" : "LONGAEADXXX",
+          "description" : ""
+        },
+        "legalName" : {
+          "type" : "string",
+          "example" : "LONGBRIDGE BANK N.A.",
+          "description" : ""
+        }
+      },
+      "title" : "Data_myCounterparty"
+    },
+    "DocumentObj" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : ""
+        },
+        "url" : {
+          "type" : "string",
+          "description" : ""
+        }
+      },
+      "title" : "DocumentObj"
+    },
+    "Document201" : {
+      "type" : "object",
+      "properties" : {
+        "bic" : {
+          "type" : "string",
+          "description" : ""
+        },
+        "documents" : {
+          "type" : "array",
+          "description" : "",
+          "items" : {
+            "$ref" : "#/definitions/DocumentObj"
+          }
+        }
+      },
+      "title" : "Document201"
+    },
+    "Error" : {
+      "type" : "object",
+      "properties" : {
+        "errorCode" : {
+          "type" : "string",
+          "example" : "401",
+          "description" : ""
+        },
+        "errorMessage" : {
+          "type" : "string",
+          "example" : "Unauthorised",
+          "description" : ""
+        },
+        "correlationId" : {
+          "type" : "string",
+          "example" : "321-123-321",
+          "description" : ""
+        }
+      },
+      "title" : "Error"
+    },
+    "DataIoc_inner" : {
+      "properties" : {
+        "publicationDate" : {
+          "type" : "string",
+          "example" : "2018-03-28",
+          "description" : ""
+        },
+        "data" : {
+          "$ref" : "#/definitions/Data"
+        },
+        "documents" : {
+          "type" : "array",
+          "example" : [ {
+            "documentType" : "Proof of regulation",
+            "fileName" : "GLOBDESTXXX_POR_English.pdf",
+            "language" : "English",
+            "url" : "/documents/SWAAABU99027",
+            "expiryDate" : "2020-01-01T00:00:00.000Z",
+            "description" : "Proof Of Regulation"
+          } ],
+          "description" : "",
+          "items" : {
+            "$ref" : "#/definitions/DocumentModel"
+          }
+        }
+      }
+    },
+    "DataOms_inner" : {
+      "properties" : {
+        "publicationDate" : {
+          "type" : "string",
+          "example" : "2018-03-28",
+          "description" : ""
+        },
+        "source" : {
+          "type" : "string",
+          "example" : "GH",
+          "description" : "this attribute shown where is the data linked from(optional)"
+        },
+        "linked" : {
+          "type" : "string",
+          "example" : "true",
+          "description" : "this attribute shown whether the data is linked(optional)"
+        },
+        "data" : {
+          "$ref" : "#/definitions/Data11"
+        },
+        "documents" : {
+          "type" : "array",
+          "example" : [ {
+            "documentName" : "Proof of regulation",
+            "documentStatus" : "Not Applicable",
+            "documentStatusComment" : "document not exists"
+          } ],
+          "description" : "",
+          "items" : {
+            "$ref" : "#/definitions/DocumentModel"
+          }
+        }
+      }
+    },
+    "DataTob_inner" : {
+      "properties" : {
+        "publicationDate" : {
+          "type" : "string",
+          "example" : "2018-03-28",
+          "description" : ""
+        },
+        "data" : {
+          "$ref" : "#/definitions/Data34"
+        }
+      }
+    },
+    "DataCom_inner" : {
+      "properties" : {
+        "publicationDate" : {
+          "type" : "string",
+          "example" : "2018-03-28",
+          "description" : ""
+        },
+        "data" : {
+          "$ref" : "#/definitions/Data49"
+        },
+        "documents" : {
+          "$ref" : "#/definitions/Documents"
+        }
+      }
+    },
+    "DataTax_inner" : {
+      "properties" : {
+        "data" : {
+          "$ref" : "#/definitions/Data90"
+        },
+        "documents" : {
+          "type" : "array",
+          "example" : [ {
+            "documentType" : "Proof of regulation",
+            "fileName" : "GLOBDESTXXX_CRS_English.pdf",
+            "language" : "English",
+            "url" : "/documents/SWAAABU99027",
+            "expiryDate" : "2020-01-01T00:00:00.000Z",
+            "description" : "Proof Of Regulation"
+          } ],
+          "description" : "",
+          "items" : {
+            "$ref" : "#/definitions/DocumentModel"
+          }
+        }
+      }
+    }
+  }
+}
